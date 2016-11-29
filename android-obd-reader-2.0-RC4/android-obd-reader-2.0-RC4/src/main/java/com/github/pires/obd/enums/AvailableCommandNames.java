@@ -44,7 +44,7 @@ public enum AvailableCommandNames {
     ENGINE_FUEL_RATE("Engine Fuel Rate"),
     FUEL_RAIL_PRESSURE("Fuel Rail Pressure"),
     VIN("Vehicle Identification Number (VIN)"),
-    DISTANCE_TRAVELED_MIL_ON("Distance traveled with MIL on"),
+    DISTANCE_TRAVELED_ON("Distance traveled on"),
     TIME_TRAVELED_MIL_ON("Time run with MIL on"),
     TIME_SINCE_TC_CLEARED("Time since trouble codes cleared"),
     REL_THROTTLE_POS("Relative throttle position"),

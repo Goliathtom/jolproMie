@@ -12,13 +12,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/startDate"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25" />
-
-        <TextView
-            android:id="@+id/columnDuration"
+            android:id="@+id/pointDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25" />
@@ -26,37 +20,34 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/rowEngine"
+        android:id="@+id/rowPrevPoint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="left"
         android:paddingLeft="15dp"
         android:singleLine="true" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/rowOther"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:paddingLeft="15dp"
-            android:singleLine="true" />
-        <TextView
-            android:id="@+id/rowDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:paddingLeft="15dp"
-            android:singleLine="true" />
-    </LinearLayout>
     <TextView
-        android:id="@+id/rowPoint"
+        android:id="@+id/rowGotPoint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingLeft="15dp"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/rowSpentPoint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingLeft="15dp"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/rowCurPoint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
         android:gravity="left"
         android:paddingLeft="15dp"
         android:singleLine="true" />

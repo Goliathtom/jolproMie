@@ -43,7 +43,7 @@ public final class ObdConfig {
         // Control
         cmds.add(new ModuleVoltageCommand());
         cmds.add(new EquivalentRatioCommand());
-        cmds.add(new DistanceMILOnCommand());
+        cmds.add(new DistanceMILOnCommand()); // 주행 총거리
         cmds.add(new DtcNumberCommand());
         cmds.add(new TimingAdvanceCommand());
         cmds.add(new TroubleCodesCommand());
@@ -57,17 +57,17 @@ public final class ObdConfig {
         cmds.add(new ThrottlePositionCommand());
 
         // Fuel
-        cmds.add(new FindFuelTypeCommand());
-        cmds.add(new ConsumptionRateCommand());
+        cmds.add(new FindFuelTypeCommand()); // 연료 타입
+        cmds.add(new ConsumptionRateCommand()); // 킬로당 연료 소모량
         // cmds.add(new AverageFuelEconomyObdCommand());
         //cmds.add(new FuelEconomyCommand());
         cmds.add(new FuelLevelCommand());
         // cmds.add(new FuelEconomyMAPObdCommand());
         // cmds.add(new FuelEconomyCommandedMAPObdCommand());
-        cmds.add(new FuelTrimCommand(FuelTrim.LONG_TERM_BANK_1));
+        /*cmds.add(new FuelTrimCommand(FuelTrim.LONG_TERM_BANK_1));
         cmds.add(new FuelTrimCommand(FuelTrim.LONG_TERM_BANK_2));
         cmds.add(new FuelTrimCommand(FuelTrim.SHORT_TERM_BANK_1));
-        cmds.add(new FuelTrimCommand(FuelTrim.SHORT_TERM_BANK_2));
+        cmds.add(new FuelTrimCommand(FuelTrim.SHORT_TERM_BANK_2));*/
         cmds.add(new AirFuelRatioCommand());
         cmds.add(new WidebandAirFuelRatioCommand());
         cmds.add(new OilTempCommand());

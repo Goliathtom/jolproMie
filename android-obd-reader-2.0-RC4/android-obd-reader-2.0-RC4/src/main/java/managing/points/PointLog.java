@@ -1,4 +1,4 @@
-package com.github.pires.obd.reader.trips;
+package managing.points;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,67 +13,64 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Some code taken from https://github.com/wdkapps/FillUp
+ * Created by Jungki on 2016-11-14.
  */
-public class TripLog {
+
+public class PointLog {
 
     /// the database version number
     public static final int DATABASE_VERSION = 2;
     /// the name of the database
-    public static final String DATABASE_NAME = "tripslog_test3.db";
+    public static final String DATABASE_NAME = "pointLog_test1.db";
     /// a tag string for debug logging (the name of this class)
-    private static final String TAG = TripLog.class.getName();
+    private static final String TAG = PointLog.class.getName();
     /// database table names
-    private static final String RECORDS_TABLE = "Records";
+    private static final String RECORDS_TABLE = "Point";
     /// SQL commands to delete the database
     public static final String[] DATABASE_DELETE = new String[]{
             "drop table if exists " + RECORDS_TABLE + ";",
     };
+
     /// column names for RECORDS_TABLE
     private static final String RECORD_ID = "id";
-    private static final String RECORD_START_DATE = "startDate";
-    private static final String RECORD_END_DATE = "endDate";
-    private static final String RECORD_RPM_MAX = "rmpMax";
-    private static final String RECORD_SPEED_MAX = "speedMax";
-    private static final String RECORD_TRAVELED_DISTANCE = "traveledDistance";
-    private static final String RECORD_SAVE_POINT = "savedPoint";
-    private static final String RECORD_ENGINE_RUNTIME = "engineRuntime";
+    private static final String RECORD_DATE = "recordDate";
+    private static final String RECORD_PREV_POINT = "prevPoint";
+    private static final String RECORD_SPENT_POINT = "spentPoint";
+    private static final String RECORD_GOT_POINT = "gotPoint";
+    private static final String RECORD_CUR_POINT = "currentPoint";
     /// SQL commands to create the database
     public static final String[] DATABASE_CREATE = new String[]{
             "create table " + RECORDS_TABLE + " ( " +
                     RECORD_ID + " integer primary key autoincrement, " +
-                    RECORD_START_DATE + " integer not null, " +
-                    RECORD_END_DATE + " integer, " +
-                    RECORD_SPEED_MAX + " integer, " +
-                    RECORD_RPM_MAX + " integer, " +
-                    RECORD_TRAVELED_DISTANCE + " text, " +
-                    RECORD_SAVE_POINT + " integer, " +
-                    RECORD_ENGINE_RUNTIME + " text" +
+                    RECORD_DATE + " integer not null, " +
+                    RECORD_PREV_POINT + " integer, " +
+                    RECORD_SPENT_POINT + " integer, " +
+                    RECORD_GOT_POINT + " integer, " +
+                    RECORD_CUR_POINT + " integer, " +
                     ");"
     };
     /// array of all column names for RECORDS_TABLE
     private static final String[] RECORDS_TABLE_COLUMNS = new String[]{
             RECORD_ID,
-            RECORD_START_DATE,
-            RECORD_END_DATE,
-            RECORD_SPEED_MAX,
-            RECORD_TRAVELED_DISTANCE,
-            RECORD_SAVE_POINT,
-            RECORD_ENGINE_RUNTIME,
-            RECORD_RPM_MAX
+            RECORD_DATE,
+            RECORD_PREV_POINT,
+            RECORD_SPENT_POINT,
+            RECORD_GOT_POINT,
+            RECORD_CUR_POINT
     };
+
     /// singleton instance
-    private static TripLog instance;
+    private static PointLog instance;
     /// context of the instance creator
     private final Context context;
     /// a helper instance used to open and close the database
-    private final TripLogOpenHelper helper;
+    private final PointLogOpenHelper helper;
     /// the database
     private final SQLiteDatabase db;
 
-    private TripLog(Context context) {
+    private PointLog(Context context) {
         this.context = context;
-        this.helper = new TripLogOpenHelper(this.context);
+        this.helper = new PointLogOpenHelper(this.context);
         this.db = helper.getWritableDatabase();
     }
 
@@ -83,9 +80,9 @@ public class TripLog {
      *
      * @return GasLog - singleton instance.
      */
-    public static TripLog getInstance(Context context) {
+    public static PointLog getInstance(Context context) {
         if (instance == null) {
-            instance = new TripLog(context);
+            instance = new PointLog(context);
         }
         return instance;
     }
@@ -107,11 +104,11 @@ public class TripLog {
         }
     }
 
-    public TripRecord startTrip() {
+    public PointRecord startTrip() {
         final String tag = TAG + ".createRecord()";
 
         try {
-            TripRecord record = new TripRecord();
+            PointRecord record = new PointRecord();
             long rowID = db.insertOrThrow(RECORDS_TABLE, null, getContentValues(record));
             record.setID((int) rowID);
             return record;
@@ -122,15 +119,14 @@ public class TripLog {
         }
         return null;
     }
-
     /**
      * DESCRIPTION:
      * Updates a trip record in the log.
      *
-     * @param record - the TripRecord to update.
+     * @param record - the PointRecords to update.
      * @return boolean flag indicating success/failure (true=success)
      */
-    public boolean updateRecord(TripRecord record) {
+    public boolean updateRecord(PointRecord record) {
         final String tag = TAG + ".updateRecord()";
         ASSERT((record.getID() != null), tag, "record id cannot be null");
         boolean success = false;
@@ -150,42 +146,35 @@ public class TripLog {
 
     /**
      * DESCRIPTION:
-     * Convenience method to convert a TripRecord instance to a set of key/value
+     * Convenience method to convert a PointRecords instance to a set of key/value
      * pairs in a ContentValues instance utilized by SQLite access methods.
      *
      * @param record - the GasRecord to convert.
      * @return a ContentValues instance representing the specified GasRecord.
      */
-    private ContentValues getContentValues(TripRecord record) {
+    private ContentValues getContentValues(PointRecord record) {
         ContentValues values = new ContentValues();
         values.put(RECORD_ID, record.getID());
-        values.put(RECORD_START_DATE, record.getStartDate().getTime());
         if (record.getEndDate() != null)
-            values.put(RECORD_END_DATE, record.getEndDate().getTime());
-        values.put(RECORD_RPM_MAX, record.getEngineRpmMax());
-        values.put(RECORD_SPEED_MAX, record.getSpeedMax());
-        values.put(RECORD_TRAVELED_DISTANCE, record.getTraveledDistance());
-        values.put(RECORD_SAVE_POINT, record.getSave_point());
-        if (record.getEngineRuntime() != null)
-            values.put(RECORD_ENGINE_RUNTIME, record.getEngineRuntime());
+            values.put(RECORD_DATE, record.getEndDate().getTime());
+        values.put(RECORD_PREV_POINT, record.getPrevPoint());
+        values.put(RECORD_SPENT_POINT, record.getspentPoint());
+        values.put(RECORD_GOT_POINT, record.getgotPoint());
+        values.put(RECORD_CUR_POINT, record.getcurrentPoint());
+
         return values;
     }
 
-    private void update() {
-        String sql = "ALTER TABLE " + RECORDS_TABLE + " ADD COLUMN " + RECORD_ENGINE_RUNTIME + " integer;";
-        db.execSQL(sql);
-    }
-
-    public List<TripRecord> readAllRecords() {
+    public List<PointRecord> readAllRecords() {
 
         //update();
 
         final String tag = TAG + ".readAllRecords()";
-        List<TripRecord> list = new ArrayList<>();
+        List<PointRecord> list = new ArrayList<>();
         Cursor cursor = null;
 
         try {
-            String orderBy = RECORD_START_DATE;
+            String orderBy = RECORD_DATE;
             cursor = db.query(
                     RECORDS_TABLE,
                     RECORDS_TABLE_COLUMNS,
@@ -195,11 +184,11 @@ public class TripLog {
                     null
             );
 
-            // create a list of TripRecords from the data
+            // create a list of PointRecords from the data
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     do {
-                        TripRecord record = getRecordFromCursor(cursor);
+                        PointRecord record = getRecordFromCursor(cursor);
                         list.add(record);
                     } while (cursor.moveToNext());
                 }
@@ -216,58 +205,40 @@ public class TripLog {
 
     /**
      * DESCRIPTION:
-     * Deletes a specified trip record from the log.
-     *
-     * @param id - the TripRecord to delete.
-     * @return boolean flag indicating success/failure (true=success)
-     */
-    public boolean deleteTrip(long id) {
-
-        final String tag = TAG + ".deleteRecord()";
-
-        boolean success = false;
-
-        try {
-            String whereClause = RECORD_ID + "=" + id;
-            String[] whereArgs = null;
-            int count = db.delete(RECORDS_TABLE, whereClause, whereArgs);
-            success = (count == 1);
-        } catch (SQLException e) {
-            Log.e(tag, "SQLException: " + e.getMessage());
-        }
-
-        return success;
-    }
-
-    /**
-     * DESCRIPTION:
-     * Convenience method to create a TripRecord instance from values read
+     * Convenience method to create a PointRecords instance from values read
      * from the database.
      *
      * @param c - a Cursor containing results of a database query.
      * @return a GasRecord instance (null if no data).
      */
-    private TripRecord getRecordFromCursor(Cursor c) {
+    private PointRecord getRecordFromCursor(Cursor c) {
         final String tag = TAG + ".getRecordFromCursor()";
-        TripRecord record = null;
+        PointRecord record = null;
         if (c != null) {
-            record = new TripRecord();
+            record = new PointRecord();
+            int current_position = c.getPosition();
             int id = c.getInt(c.getColumnIndex(RECORD_ID));
-            long startDate = c.getLong(c.getColumnIndex(RECORD_START_DATE));
-            long endTime = c.getLong(c.getColumnIndex(RECORD_END_DATE));
-            int engineRpmMax = c.getInt(c.getColumnIndex(RECORD_RPM_MAX));
-            int speedMax = c.getInt(c.getColumnIndex(RECORD_SPEED_MAX));
-            int savedPoint = c.getInt(c.getColumnIndex(RECORD_SAVE_POINT));
+            long endTime = c.getLong(c.getColumnIndex(RECORD_DATE));
+            int prev_point = c.getInt(c.getColumnIndex(RECORD_PREV_POINT));
+            int spent_point = c.getInt(c.getColumnIndex(RECORD_SPENT_POINT));
+            int got_point = c.getInt(c.getColumnIndex(RECORD_GOT_POINT));
+//            int cur_point = c.getInt(c.getColumnIndex(RECORD_CUR_POINT));
             record.setID(id);
-            record.setStartDate(new Date(startDate));
             record.setEndDate(new Date(endTime));
-            record.setEngineRpmMax(engineRpmMax);
-            record.setSpeedMax(speedMax);
-            record.setSavePoint(savedPoint);
-            record.setTraveledDistance(c.getString(c.getColumnIndex(RECORD_TRAVELED_DISTANCE)));
-            if (!c.isNull(c.getColumnIndex(RECORD_ENGINE_RUNTIME)))
-                record.setEngineRuntime(c.getString(c.getColumnIndex(RECORD_ENGINE_RUNTIME)));
+            if(current_position - 1 < 0){
+                record.setprevPoint(0);
+            }
+            else{
+                Cursor pCursor  = c;
+                pCursor.moveToPrevious();
+                record.setprevPoint(pCursor.getInt(pCursor.getColumnIndex(RECORD_CUR_POINT)));
+            }
+            record.setspentPoint(spent_point);
+            record.setgotPoint(got_point);
+            record.setcurrentPoint();
         }
         return record;
     }
+
 }
+

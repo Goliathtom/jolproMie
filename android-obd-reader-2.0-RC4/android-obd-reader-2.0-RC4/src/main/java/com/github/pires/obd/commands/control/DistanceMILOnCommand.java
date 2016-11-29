@@ -27,10 +27,18 @@ public class DistanceMILOnCommand extends ObdCommand
 
     /**
      * Default ctor.
+     * Distance traveled with malfunction indicator lamp (MIL) on
      */
     public DistanceMILOnCommand() {
         super("01 21");
     }
+
+    /**
+     * Default ctor.
+     * Distance traveled since codes cleared
+     */
+     //public DistanceMILOnCommand() { super("01 31");  }
+
 
     /**
      * Copy ctor.
@@ -56,7 +64,7 @@ public class DistanceMILOnCommand extends ObdCommand
      */
     public String getFormattedResult() {
         return useImperialUnits ? String.format("%.2f%s", getImperialUnit(), getResultUnit())
-                : String.format("%d%s", km, getResultUnit());
+                : String.format("%d%s", getKm(), getResultUnit());
     }
 
     /** {@inheritDoc} */
@@ -68,13 +76,13 @@ public class DistanceMILOnCommand extends ObdCommand
     /** {@inheritDoc} */
     @Override
     public String getResultUnit() {
-        return useImperialUnits ? "m" : "km";
+        return useImperialUnits ? "miles" : "m";
     }
 
     /** {@inheritDoc} */
     @Override
     public float getImperialUnit() {
-        return km * 0.621371192F;
+        return getKm() * 0.621371192F;
     }
 
     /**
@@ -89,8 +97,12 @@ public class DistanceMILOnCommand extends ObdCommand
     /** {@inheritDoc} */
     @Override
     public String getName() {
-        return AvailableCommandNames.DISTANCE_TRAVELED_MIL_ON
+        return AvailableCommandNames.DISTANCE_TRAVELED_ON
                 .getValue();
+    }
+
+    public void setCurrentDrivingDistance(int current_distance) {
+        km = current_distance;
     }
 
 }

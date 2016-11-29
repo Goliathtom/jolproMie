@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/activity_horizontal_margin"
     android:orientation="vertical">
-
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
@@ -14,19 +13,23 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:tag="SPEED"
-            android:text="@string/text_zero"
-            android:textSize="@dimen/abc_text_size_display_3_material" />
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Consumption" />
 
         <TextView
-            android:id="@+id/compass_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="end"
-            android:text="@string/text_orientation_default"
-            android:textSize="@dimen/abc_text_size_display_3_material" />
+            android:gravity="center"
+            android:text="Engine Runtime" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="RPM" />
     </TableRow>
 
     <TableRow
@@ -58,23 +61,336 @@
             android:text="" />
     </TableRow>
 
-    <ScrollView
-        android:id="@+id/data_scroll"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="top"
-        android:layout_margin="10dp"
-        android:layout_weight="1"
-        android:elevation="2dp"
-        android:outlineProvider="bounds">
 
-        <TableLayout
-            android:id="@+id/data_table"
+
+    <ScrollView
+        android:id="@+id/total_scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:elevation="2dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:gravity="start"
+            android:textSize="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="5dp"
+            android:text="SPEED"
+            android:textAlignment="viewStart"/>
+
+        <TableRow
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="*"></TableLayout>
-    </ScrollView>
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
 
+            <ProgressBar
+                android:id="@+id/speed_pb"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:indeterminate="false"
+                android:progressDrawable="@drawable/circular_progress_bar_green"
+                android:background="@drawable/circle_shape"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:max="260"
+                android:progress="0" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:tag="SPEED"
+                android:text="0km/h"
+                android:textSize="@dimen/abc_text_size_display_2_material"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"/>
+
+            <TextView
+                android:id="@+id/compass_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:paddingTop="10dp"
+                android:text="@string/text_orientation_default"
+                android:textSize="@dimen/abc_text_size_display_2_material" />
+        </TableRow>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:gravity="start"
+            android:textSize="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="5dp"
+            android:text="DISTANCE"
+            android:textAlignment="viewStart"/>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
+
+            <ProgressBar
+                android:id="@+id/distance_pb"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:indeterminate="false"
+                android:progressDrawable="@drawable/circular_progress_bar_red"
+                android:background="@drawable/circle_shape"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:max="1000"
+                android:progress="0" />
+
+            <TextView
+                android:id="@+id/distance_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:paddingTop="10dp"
+                android:text="0m"
+                android:textSize="32sp" />
+
+
+        </TableRow>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progress="0"
+                android:max="1000"
+                android:id="@+id/pb_point"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="20dp">
+
+                <TextView
+                    android:text="For Getting 20 Points, Remains"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+                <TextView
+                    android:text="0m"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/remain_dt"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:text=" / 1000m"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/textView" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="20dp">
+
+                <TextView
+                    android:text="Current Collected Point : "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+                <TextView
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cpoint_txt"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="35dp"
+                android:gravity="start"
+                android:textSize="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="5dp"
+                android:text="FUEL"
+                android:textAlignment="viewStart"
+                android:id="@+id/textView2" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Consumed %" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Consumed Fuel" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Fuel Type" />
+
+            </LinearLayout>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp">
+
+                <ProgressBar
+                    android:id="@+id/fuel_pb"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:indeterminate="false"
+                    android:progressDrawable="@drawable/circular_progress_bar_yellow"
+                    android:background="@drawable/circle_shape"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="8000"
+                    android:progress="0" />
+
+                <TextView
+                    android:id="@+id/fuel_rate_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:paddingTop="10dp"
+                    android:text="0mL"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/fueltype_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:paddingTop="10dp"
+                    android:text="-"
+                    android:textSize="24sp" />
+            </TableRow>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="37dp"
+                android:gravity="start"
+                android:textSize="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="5dp"
+                android:text="Engine"
+                android:textAlignment="viewStart"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="RPM" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Engine Load" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Coolant Temp" />
+
+            </LinearLayout>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp">
+
+                <ProgressBar
+                    android:id="@+id/engine_RPM_pb"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:indeterminate="false"
+                    android:progressDrawable="@drawable/circular_progress_bar_blue"
+                    android:background="@drawable/circle_shape"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="4000"
+                    android:progress="0" />
+
+                <TextView
+                    android:id="@+id/engine_load_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:paddingTop="10dp"
+                    android:text="0.0%"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/engine_cool_temp_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:paddingTop="10dp"
+                    android:text="-"
+                    android:textSize="24sp" />
+            </TableRow>
+
+              <ScrollView
+                android:id="@+id/data_scroll"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:elevation="2dp"
+                android:outlineProvider="bounds">
+
+                <TableLayout
+                    android:id="@+id/data_table"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="*"></TableLayout>
+                </ScrollView>
+        </LinearLayout>
+    </ScrollView>
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
@@ -105,7 +421,6 @@
 
 
     </TableRow>
-
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
@@ -136,3 +451,4 @@
     </TableRow>
 
 </LinearLayout>
+

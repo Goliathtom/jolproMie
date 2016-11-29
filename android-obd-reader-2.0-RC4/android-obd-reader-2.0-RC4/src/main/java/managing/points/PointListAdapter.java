@@ -1,4 +1,4 @@
-package com.github.pires.obd.reader.trips;
+package managing.points;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -8,16 +8,17 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.github.pires.obd.reader.R;
+import managing.points.PointRecord;
 
 import java.util.Date;
 import java.util.List;
 
-public class TripListAdapter extends ArrayAdapter<TripRecord> {
+public class PointListAdapter extends ArrayAdapter<PointRecord> {
     /// the Android Activity owning the ListView
     private final Activity activity;
 
     /// a list of trip records for display
-    private final List<TripRecord> records;
+    private final List<PointRecord> records;
 
     /**
      * DESCRIPTION:
@@ -26,8 +27,8 @@ public class TripListAdapter extends ArrayAdapter<TripRecord> {
      * @param activity - the Android Activity instance that owns the ListView.
      * @param records  - the List of TripRecord instances for display in the ListView.
      */
-    public TripListAdapter(Activity activity, List<TripRecord> records) {
-        super(activity, R.layout.row_trip_list, records);
+    public PointListAdapter(Activity activity, List<PointRecord> records) {
+        super(activity, R.layout.row_point_list, records);
         this.activity = activity;
         this.records = records;
     }
@@ -37,7 +38,7 @@ public class TripListAdapter extends ArrayAdapter<TripRecord> {
      * Constructs and populates a View for display of the TripRecord at the index
      * of the List specified by the position parameter.
      *
-     * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
+     * @see ArrayAdapter#getView(int, View, ViewGroup)
      */
     @Override
     public View getView(int position, View view, ViewGroup parent) {
@@ -45,34 +46,34 @@ public class TripListAdapter extends ArrayAdapter<TripRecord> {
         // create a view for the row if it doesn't already exist
         if (view == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
-            view = inflater.inflate(R.layout.row_trip_list, null);
+            view = inflater.inflate(R.layout.row_point_list, null);
         }
 
         // get widgets from the view
-        TextView startDate = (TextView) view.findViewById(R.id.startDate);
-        TextView columnDuration = (TextView) view.findViewById(R.id.columnDuration);
-        TextView rowEngine = (TextView) view.findViewById(R.id.rowEngine);
-        TextView rowOther = (TextView) view.findViewById(R.id.rowOther);
-        TextView rowDistance = (TextView) view.findViewById(R.id.rowDistance);
-        TextView rowPoint = (TextView) view.findViewById(R.id.rowPoint);
+        TextView pointDate = (TextView) view.findViewById(R.id.pointDate);
+       // TextView columnDuration = (TextView) view.findViewById(R.id.columnDuration);
+        TextView rowPrevPoint = (TextView) view.findViewById(R.id.rowPrevPoint);
+        TextView rowGotPoint = (TextView) view.findViewById(R.id.rowGotPoint);
+        TextView rowSpentPoint = (TextView) view.findViewById(R.id.rowSpentPoint);
+        TextView rowCurPoint = (TextView) view.findViewById(R.id.rowCurPoint);
 
         // populate row widgets from record data
-        TripRecord record = records.get(position);
+        PointRecord record = records.get(position);
 
         // date
-        startDate.setText(record.getStartDateString());
-        columnDuration.setText(calcDiffTime(record.getStartDate(), record.getEndDate()));
+        pointDate.setText(record.getDateString());
+        //columnDuration.setText(calcDiffTime(record.getStartDate(), record.getEndDate()));
 
-        String rpmMax = String.valueOf(record.getEngineRpmMax());
+        String PrevPoint = String.valueOf(record.getPrevPoint());
+        String GotPoint = String.valueOf(record.getgotPoint());
+        String SpentPoint = String.valueOf(record.getspentPoint());
+        String CurPoint = String.valueOf(record.getcurrentPoint());
 
-        String engineRuntime = record.getEngineRuntime();
-        if (engineRuntime == null)
-            engineRuntime = "None";
-        rowEngine.setText("Engine Runtime: " + engineRuntime + "\tMax RPM: " + rpmMax);
+        rowPrevPoint.setText("Previous Point: " + PrevPoint + "\tPoints");
+        rowGotPoint.setText("Got Point: " + GotPoint + "\tPoints");
+        rowSpentPoint.setText("Spent Point: " + SpentPoint + "\tPoints");
+        rowCurPoint.setText("Current Point: " + CurPoint + "\tPoints");
 
-        rowOther.setText("Max speed: " + String.valueOf(record.getSpeedMax()));
-        rowDistance.setText("Traveled Distance: " + String.valueOf(record.getTraveledDistance()));
-        rowPoint.setText("Getting points: " + String.valueOf(record.getSave_point()) + " Points");
         return view;
     }
 
@@ -116,7 +117,7 @@ public class TripListAdapter extends ArrayAdapter<TripRecord> {
      * DESCRIPTION:
      * Called by parent when the underlying data set changes.
      *
-     * @see android.widget.ArrayAdapter#notifyDataSetChanged()
+     * @see ArrayAdapter#notifyDataSetChanged()
      */
     @Override
     public void notifyDataSetChanged() {

@@ -20,7 +20,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     android.buildToolsVersion "23.0.1"
     defaultConfig {
         minSdkVersion 14
@@ -43,7 +43,7 @@ android {
 
 dependencies {
     compile 'com.github.pires:obd-java-api:1.0'
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'org.roboguice:roboguice:3.+'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
 }

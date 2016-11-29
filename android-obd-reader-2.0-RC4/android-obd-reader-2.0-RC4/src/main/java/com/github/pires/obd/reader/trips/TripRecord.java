@@ -19,7 +19,11 @@ public class TripRecord {
 
     private Integer speed = 0;
 
+    private String traveledDistance;
+
     private String engineRuntime;
+
+    private int save_point = 0;
 
     public TripRecord() {
         startDate = new Date();
@@ -133,5 +137,19 @@ public class TripRecord {
         if (!value.equals("00:00:00")) {
             this.engineRuntime = value;
         }
+    }
+
+    public void setTraveledDistance(String value){
+        this.traveledDistance = value;
+    }
+    public String getTraveledDistance(){
+        return traveledDistance;
+    }
+
+    public void setSavePoint(int _save_point){
+        save_point = _save_point;
+    }
+    public int getSave_point(){
+        return save_point;
     }
 }

@@ -40,6 +40,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -47,6 +48,8 @@ import android.widget.Toast;
 
 import com.github.pires.obd.commands.ObdCommand;
 import com.github.pires.obd.commands.SpeedCommand;
+import com.github.pires.obd.commands.SystemOfUnits;
+import com.github.pires.obd.commands.control.DistanceMILOnCommand;
 import com.github.pires.obd.commands.engine.RPMCommand;
 import com.github.pires.obd.commands.engine.RuntimeCommand;
 import com.github.pires.obd.enums.AvailableCommandNames;
@@ -64,17 +67,23 @@ import com.github.pires.obd.reader.net.ObdService;
 import com.github.pires.obd.reader.trips.TripLog;
 import com.github.pires.obd.reader.trips.TripRecord;
 
+import managing.ManagingPoint;
+
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javax.inject.Inject;
 
+import managing.points.PointLog;
+import managing.points.PointRecord;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -82,6 +91,7 @@ import roboguice.RoboGuice;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+
 
 /**
  * Configuration com.github.pires.obd.reader.activity.
@@ -114,8 +124,8 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
      */
     public static int getObdUpdatePeriod(SharedPreferences prefs) {
         String periodString = prefs.
-                getString(ConfigActivity.OBD_UPDATE_PERIOD_KEY, "4"); // 4 as in seconds
-        int period = 4000; // by default 4000ms
+                getString(ConfigActivity.OBD_UPDATE_PERIOD_KEY, "1"); // 1 as in seconds
+        int period = 1000; // by default 4000ms
 
         try {
             period = (int) (Double.parseDouble(periodString) * 1000);
@@ -123,7 +133,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
         }
 
         if (period <= 0) {
-            period = 4000;
+            period = 1000;
         }
 
         return period;
@@ -228,8 +238,8 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
      */
     public static float getGpsDistanceUpdatePeriod(SharedPreferences prefs) {
         String periodString = prefs
-                .getString(ConfigActivity.GPS_DISTANCE_PERIOD_KEY, "5"); // 5 as in meters
-        float period = 5; // by default 5 meters
+                .getString(ConfigActivity.GPS_DISTANCE_PERIOD_KEY, "1"); // 5 as in meters
+        float period = 1; // by default 5 meters
 
         try {
             period = Float.parseFloat(periodString);
@@ -237,7 +247,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
         }
 
         if (period <= 0) {
-            period = 5;
+            period = 1;
         }
 
         return period;
@@ -285,6 +295,8 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
             cmdScr.addPreference(cpref);
         }
 
+        //final DistanceMILOnCommand kmcommand = (DistanceMILOnCommand) ObdCommandJob.getCommand();
+        //int current_distance = kmcommand.getKm() % 2000;
     /*
      * Available OBD protocols
      *
@@ -420,9 +432,18 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
         private LocationProvider mLocProvider;
         private LogCSVWriter myCSVWriter;
         private Location mLastLocation;
+
+        /// Managing Point
+        private ManagingPoint managingPoint = new ManagingPoint();
+        private DistanceMILOnCommand distanceMILOnCommand = new DistanceMILOnCommand();
+        private Random random = new Random();
         /// the trip log
         private TripLog triplog;
         private TripRecord currentTrip;
+
+        // the Point Log
+        private PointLog pointlog;
+        private PointRecord pointrecord;
 
         private Context context;
         @InjectView(R.id.compass_text)
@@ -466,6 +487,10 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
         private LinearLayout vv;
         @InjectView(R.id.data_table)
         private TableLayout tl;
+        @InjectView(R.id.remain_dt)
+        private TextView remain_dt_data;
+        @InjectView(R.id.cpoint_txt)
+        private TextView view_c_point;
         @Inject
         private SensorManager sensorManager;
         @Inject
@@ -556,6 +581,9 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
             }
         };
 
+        public MainActivity() {
+        }
+
         public static String LookUpCommand(String txt) {
             for (AvailableCommandNames item : AvailableCommandNames.values()) {
                 if (item.getValue().equals(txt)) return item.name();
@@ -576,6 +604,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
             String cmdResult = "";
             final String cmdID = LookUpCommand(cmdName);
 
+            Log.d(TAG, "CMD ID : "+cmdID);
             if (job.getState().equals(ObdCommandJob.ObdCommandJobState.EXECUTION_ERROR)) {
                 cmdResult = job.getCommand().getResult();
                 if (cmdResult != null) {
@@ -593,6 +622,78 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                 existingTV.setText(cmdResult);
             } else addTableRow(cmdID, cmdName, cmdResult);
             commandResult.put(cmdID, cmdResult);
+            // 스피드에 대한 Progress Bar
+            if(cmdID.equals(AvailableCommandNames.SPEED.toString())){
+                String[] kmdata = cmdResult.split("km");
+                ProgressBar pb_speed = (ProgressBar) findViewById((R.id.speed_pb));
+                pb_speed.setProgress(Integer.parseInt(kmdata[0]));
+
+                // 현재 차량 속도
+               int current_speed = Integer.parseInt(kmdata[0]);
+               //int current_speed = random.nextInt(70); // The Function Test with the Random values
+                int current_distance = (current_speed*1000) / 900; // Distance drived per each 1 seconds
+                distanceMILOnCommand.setCurrentDrivingDistance(distanceMILOnCommand.getKm()+current_distance);
+
+/*            }
+            // 이동 거리-포인트
+            if(cmdID.equals(AvailableCommandNames.DISTANCE_TRAVELED_ON.toString())){*/
+                TextView dtv = (TextView) findViewById(R.id.distance_text);
+                ProgressBar pb_distance = (ProgressBar) findViewById((R.id.distance_pb));
+
+/*                // Split Data of Km into km to get Int value of KM
+                String[] kmdata = cmdResult.split("km");*/
+
+                // Write down the distance on textview under 'distance_text'
+                dtv.setText(String.format("%d%s", distanceMILOnCommand.getKm(), "m"));
+                // Draw circle progress bar with m data.
+                pb_distance.setProgress(distanceMILOnCommand.getKm()%1000);
+
+                int remain_dt_pb = 1000 - (distanceMILOnCommand.getKm()%1000); // km that is remained to get points
+                remain_dt_data.setText(String.format("%d%s", remain_dt_pb, "m")); // setText of remained km
+                ProgressBar pb_point = (ProgressBar) findViewById(R.id.pb_point); // progressBar value
+                pb_point.setProgress(remain_dt_pb);
+                // Managing Point
+                int __point_count = distanceMILOnCommand.getKm() / 1000;
+                //int __point_count = 16 / 5;
+                if(managingPoint != null){
+                    if(__point_count != 0){
+                        managingPoint.setPointCount(__point_count);
+                        int current_point = managingPoint.getPointCount() * 20; // 20 Points per each 1 KM
+                        managingPoint.setPoint(current_point);
+                        view_c_point.setText(String.valueOf(current_point)); // Point : Int -> String
+                    }
+                }
+/*            }
+            // 시간당 연료 소비량에 대한 text 와 progressBar
+            if(cmdID.equals(AvailableCommandNames.FUEL_CONSUMPTION_RATE.toString())){*/
+
+              //      String[] fueldata = cmdResult.split("L");
+                    ProgressBar fuel_pb = (ProgressBar) findViewById((R.id.fuel_pb));
+                    TextView frtv = (TextView) findViewById(R.id.fuel_rate_text);
+                // 평균 연비는 8000m/L로 설정.
+                  //  int consumedfuel = distanceMILOnCommand.getKm() / 8; : 누적 이동 거리에 대한 연료소비량
+                    fuel_pb.setProgress(( distanceMILOnCommand.getKm()/8)%8000);
+                    frtv.setText(String.format("%d%s", ( distanceMILOnCommand.getKm()/8), "mL"));
+            }
+            // 연료 타입에 대한 text
+            if(cmdID.equals(AvailableCommandNames.FUEL_TYPE.toString())){
+                TextView ftv = (TextView) findViewById(R.id.fueltype_text);
+                ftv.setText("Diesel");
+            }
+            if(cmdID.equals(AvailableCommandNames.ENGINE_RPM.toString())){
+                String[] rpmdata = cmdResult.split("RPM");
+                ProgressBar engine_RPM_pb = (ProgressBar) findViewById((R.id.engine_RPM_pb));
+                engine_RPM_pb.setProgress(Integer.parseInt(rpmdata[0]));
+            }
+            if(cmdID.equals(AvailableCommandNames.ENGINE_LOAD.toString())) {
+                TextView rpmtv = (TextView) findViewById(R.id.engine_load_text);
+                rpmtv.setText(cmdResult);
+            }
+            if(cmdID.equals(AvailableCommandNames.ENGINE_COOLANT_TEMP.toString())){
+                TextView cool_ttv = (TextView) findViewById(R.id.engine_cool_temp_text);
+                cool_ttv.setText(cmdResult);
+            }
+
             updateTripStatistic(job, cmdID);
         }
 
@@ -627,7 +728,15 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                 } else if (cmdID.endsWith(AvailableCommandNames.ENGINE_RUNTIME.toString())) {
                     RuntimeCommand command = (RuntimeCommand) job.getCommand();
                     currentTrip.setEngineRuntime(command.getFormattedResult());
+                } else if (cmdID.equals(AvailableCommandNames.DISTANCE_TRAVELED_ON.toString())){
+                    DistanceMILOnCommand command = (DistanceMILOnCommand) job.getCommand();
+                    currentTrip.setTraveledDistance(String.format("%d%s", distanceMILOnCommand.getKm(), "m"));
+                    currentTrip.setSavePoint(managingPoint.getPoint());
                 }
+            }
+
+            if(pointrecord != null){
+
             }
         }
 
@@ -703,8 +812,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                     "ObdReader");
 
             // get Bluetooth device
-            final BluetoothAdapter btAdapter = BluetoothAdapter
-                    .getDefaultAdapter();
+            final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
 
             preRequisites = btAdapter != null && btAdapter.isEnabled();
             if (!preRequisites && prefs.getBoolean(ENABLE_BT_KEY, false)) {
@@ -771,6 +879,8 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
             Log.d(TAG, "Starting live data..");
 
             tl.removeAllViews(); //start fresh
+            distanceMILOnCommand.setCurrentDrivingDistance(0);
+           // setPointCount(0); // Initialize the Counter of Points Gathered
             doBindService();
 
             currentTrip = triplog.startTrip();
@@ -808,6 +918,8 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
 
             doUnbindService();
             endTrip();
+
+            //최종 거리, 최종 포인트에 대해 DB에 정보저장
 
             releaseWakeLockIfHeld();
     final String devemail = prefs.getString(DEV_EMAIL_KEY,null);
@@ -902,9 +1014,9 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
             value.setGravity(Gravity.LEFT);
             value.setText(val);
             value.setTag(id);
-            tr.addView(name);
+           /* tr.addView(name);
             tr.addView(value);
-            tl.addView(tr, params);
+            tl.addView(tr, params);*/
         }
 
         /**
@@ -918,6 +1030,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                 }
             }
         }
+
 
         private void doBindService() {
             if (!isServiceBound) {
