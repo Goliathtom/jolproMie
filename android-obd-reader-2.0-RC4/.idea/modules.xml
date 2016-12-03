@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/android-obd-reader-2.0-RC4/src/main/main.iml" filepath="$PROJECT_DIR$/android-obd-reader-2.0-RC4/src/main/main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-obd-reader-2.0-RC4.iml" filepath="$PROJECT_DIR$/android-obd-reader-2.0-RC4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-query-full.0.26.81/android-query-full.0.26.81.iml" filepath="$PROJECT_DIR$/android-query-full.0.26.81/android-query-full.0.26.81.iml" />
+      <module fileurl="file://$PROJECT_DIR$/com.skp.Tmap_1.0.431/com.skp.Tmap_1.0.431.iml" filepath="$PROJECT_DIR$/com.skp.Tmap_1.0.431/com.skp.Tmap_1.0.431.iml" />
     </modules>
   </component>
 </project>

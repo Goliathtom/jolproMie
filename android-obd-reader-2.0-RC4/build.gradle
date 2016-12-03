@@ -1,0 +1,52 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.1'
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+apply plugin: 'com.android.application'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 23
+    android.buildToolsVersion "23.0.1"
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 21
+        applicationId 'com.github.pires.obd.reader'
+        multiDexEnabled true  // this line will solve this problem
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.github.pires:obd-java-api:1.0'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'org.roboguice:roboguice:3.+'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile project(':com.skp.Tmap_1.0.431')
+    compile project(':android-query-full.0.26.81')
+}
