@@ -119,6 +119,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
     public static final String DIRECTORY_FULL_LOGGING_KEY = "directory_full_logging";
     public static final String DEV_EMAIL_KEY = "dev_email";
 
+    static boolean tmap_flag = false;
     //private int remainFuel_pb = 0;
     /**
      * @param prefs
@@ -690,14 +691,17 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
 
                     // 남은 연료로 주행가능 거리가 80KM 미만일 때,
                     if(remainFuel_pb<80000){
-                        // we shouldn't get here, still warn user
-                        Toast.makeText(this, "Lack of Fuel! Please Go to Charge!",
-                                Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(getBaseContext(), TmapActivity.class);
-                        intent.putExtra("Warning_Fuel", "true");
-                        startActivity(intent);
+                        if(!tmap_flag) {
+                            // we shouldn't get here, still warn user
+                            tmap_flag = true;
+                            Toast.makeText(this, "Lack of Fuel! Please Go to Charge!",
+                                    Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(this, TmapActivity.class);
+                            intent.putExtra("Warning_Fuel", "true");
+                            startActivity(intent);
+                        }
                     }
-                    frtv.setText(String.format("%d%s", ( distanceMILOnCommand.getKm()/8), "mL"));
+                    frtv.setText(String.format("%d%s", ( remainFuel_pb / 1000), "KM"));
             }
             // 연료 타입에 대한 text
             if(cmdID.equals(AvailableCommandNames.FUEL_TYPE.toString())){

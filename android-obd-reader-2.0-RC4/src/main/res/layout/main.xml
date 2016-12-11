@@ -247,7 +247,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Consumed Fuel" />
+                    android:text="Drivable Distance" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -282,7 +282,7 @@
                     android:layout_weight="1"
                     android:gravity="end"
                     android:paddingTop="10dp"
-                    android:text="0mL"
+                    android:text="0KM"
                     android:textSize="24sp" />
 
                 <TextView
