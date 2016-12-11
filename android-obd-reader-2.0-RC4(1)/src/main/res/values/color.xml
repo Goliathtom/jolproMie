@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- http://www.google.com/design/spec/style/color.html#color-color-palette -->
+    <color name="primary">#a639a6</color>
+    <!-- MIE Main Color : #FFA639A6 -->
+    <color name="primary_dark">#5b206e</color>
+    <!-- Header Side Color : #FF5B206E -->
+    <color name="accent">#ff5252</color>
+    <!-- Red A200 -->
+    <color name="colorPrimary">#a639a6</color>
+    <!-- MIE Main Color : #FFA639A6 -->
+    <color name="colorPrimaryDark">#5b206e</color>
+    <!-- Header Side Color : #FF5B206E -->
+    <color name="colorAccent">#ff5252</color>
+    <!-- Red A200 -->
+</resources>
