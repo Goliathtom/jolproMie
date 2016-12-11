@@ -59,37 +59,42 @@ public class ListViewAdapter extends BaseAdapter {
         DecimalFormat df1 = new DecimalFormat(".00");
         DecimalFormat df2 = new DecimalFormat(".0");
         // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
+
         MapPoint listViewItem = staticVar.m_mapPoint.get(position);
+        //if(staticVar.m_mapPoint.get(position).getDistance()>10000)
+          // listViewItem = null;
         Log.d("List",listViewItem.getName());
 
         // 아이템 내 각 위젯에 데이터 반영
-        nameTextView.setText(listViewItem.getName());
-        addrTextView.setText(listViewItem.getAddr());
-        priceTextView.setText("충전요금 : "+df2.format(listViewItem.getPrice())+"원/kwh");
-        distTextView.setText((df1.format(listViewItem.getDistance()/1000))+"km");
+        //if(listViewItem != null) {
+            nameTextView.setText(listViewItem.getName());
+            addrTextView.setText(listViewItem.getAddr());
+            priceTextView.setText("충전요금 : " + df2.format(listViewItem.getPrice()) + "원/kwh");
+            distTextView.setText((df1.format(listViewItem.getDistance() / 1000)) + "km");
 
-        if(listViewItem.getUsetime()==null)
-            useTimeTextView.setText("이용시간 : 24시간 이용가능");
-        else
-          useTimeTextView.setText("이용시간 : "+listViewItem.getUsetime());
+            if (listViewItem.getUsetime() == null)
+                useTimeTextView.setText("이용시간 : 24시간 이용가능");
+            else
+                useTimeTextView.setText("이용시간 : " + listViewItem.getUsetime());
 
-        if(listViewItem.getChargerType() == 1 )
-            chargerTypeTextView.setText("충전기타입 : DC차데모");
-        else if(listViewItem.getChargerType() == 3 )
-            chargerTypeTextView.setText("충전기타입 : DC차데모+AC3상");
-        else if(listViewItem.getChargerType() == 6 )
-            chargerTypeTextView.setText("충전기타입 : DC차데모+AC3상+DC콤보");
+            if (listViewItem.getChargerType() == 1)
+                chargerTypeTextView.setText("충전기타입 : DC차데모");
+            else if (listViewItem.getChargerType() == 3)
+                chargerTypeTextView.setText("충전기타입 : DC차데모+AC3상");
+            else if (listViewItem.getChargerType() == 6)
+                chargerTypeTextView.setText("충전기타입 : DC차데모+AC3상+DC콤보");
 
-        if(listViewItem.getStat() == 1)
-            statTextView.setText("충전기상태 : 통신이상");
-        else if(listViewItem.getStat() == 2)
-            statTextView.setText("충전기상태 : 충전대기");
-        else if(listViewItem.getStat() == 3)
-            statTextView.setText("충전기상태 : 충전중");
-        else if(listViewItem.getStat() == 4)
-            statTextView.setText("충전기상태 : 운영중지");
-        else if(listViewItem.getStat() == 5)
-            statTextView.setText("충전기상태 : 점검중");
+            if (listViewItem.getStat() == 1)
+                statTextView.setText("충전기상태 : 통신이상");
+            else if (listViewItem.getStat() == 2)
+                statTextView.setText("충전기상태 : 충전대기");
+            else if (listViewItem.getStat() == 3)
+                statTextView.setText("충전기상태 : 충전중");
+            else if (listViewItem.getStat() == 4)
+                statTextView.setText("충전기상태 : 운영중지");
+            else if (listViewItem.getStat() == 5)
+                statTextView.setText("충전기상태 : 점검중");
+       // }
 
         return convertView;
     }

@@ -11,5 +11,7 @@ public class staticVar {
     public static List<EvChargerItem> mList =  new ArrayList<EvChargerItem>();
     public static ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
     public static MapPoint mm =null;
+    public static int fuel;
+
 }
 
