@@ -119,6 +119,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
     public static final String DIRECTORY_FULL_LOGGING_KEY = "directory_full_logging";
     public static final String DEV_EMAIL_KEY = "dev_email";
 
+    //private int remainFuel_pb = 0;
     /**
      * @param prefs
      * @return
@@ -626,7 +627,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                 TextView existingTV = (TextView) vv.findViewWithTag(cmdID);
                 existingTV.setText(cmdResult);
             } else addTableRow(cmdID, cmdName, cmdResult);
-            commandResult.put(cmdID, cmdResult);
+               commandResult.put(cmdID, cmdResult);
             // 스피드에 대한 Progress Bar
             if(cmdID.equals(AvailableCommandNames.SPEED.toString())){
                 String[] kmdata = cmdResult.split("km");
@@ -634,11 +635,16 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                 pb_speed.setProgress(Integer.parseInt(kmdata[0]));
 
                 // 현재 차량 속도
-               //int current_speed = Integer.parseInt(kmdata[0]);
+                //int current_speed = Integer.parseInt(kmdata[0]);
                 int current_speed = 100 + random.nextInt(200); // The Function Test with the Random values
+                // Notice for over-speed
+                if(current_speed>180){
+                    // we shouldn't get here, still warn user
+                    Toast.makeText(this, "Too Much Fast! Reduce the Speed!",
+                            Toast.LENGTH_LONG).show();
+                }
                 int current_distance = (current_speed*1000) / 900; // Distance drived per each 1 seconds
                 distanceMILOnCommand.setCurrentDrivingDistance(distanceMILOnCommand.getKm()+current_distance);
-
 /*            }
             // 이동 거리-포인트
             if(cmdID.equals(AvailableCommandNames.DISTANCE_TRAVELED_ON.toString())){*/
@@ -657,7 +663,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                 remain_dt_data.setText(String.format("%d%s", remain_dt_pb, "m")); // setText of remained km
                 ProgressBar pb_point = (ProgressBar) findViewById(R.id.pb_point); // progressBar value
                 pb_point.setProgress(remain_dt_pb);
-                // Managing Point
+                // Managing Points
                 int __point_count = distanceMILOnCommand.getKm() / 1000;
                 //int __point_count = 16 / 5;
                 if(managingPoint != null){
@@ -675,9 +681,22 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
               //      String[] fueldata = cmdResult.split("L");
                     ProgressBar fuel_pb = (ProgressBar) findViewById((R.id.fuel_pb));
                     TextView frtv = (TextView) findViewById(R.id.fuel_rate_text);
+                    //int remainFuel_pb = 800000 - distanceMILOnCommand.getKm();
+                    int remainFuel_pb = 81111 - distanceMILOnCommand.getKm();
+
                 // 평균 연비는 8000m/L로 설정.
                   //  int consumedfuel = distanceMILOnCommand.getKm() / 8; : 누적 이동 거리에 대한 연료소비량
-                    fuel_pb.setProgress(( distanceMILOnCommand.getKm()/8)%8000);
+                    fuel_pb.setProgress(remainFuel_pb );
+
+                    // 남은 연료로 주행가능 거리가 80KM 미만일 때,
+                    if(remainFuel_pb<80000){
+                        // we shouldn't get here, still warn user
+                        Toast.makeText(this, "Lack of Fuel! Please Go to Charge!",
+                                Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getBaseContext(), TmapActivity.class);
+                        intent.putExtra("Warning_Fuel", "true");
+                        startActivity(intent);
+                    }
                     frtv.setText(String.format("%d%s", ( distanceMILOnCommand.getKm()/8), "mL"));
             }
             // 연료 타입에 대한 text
@@ -689,6 +708,11 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                 String[] rpmdata = cmdResult.split("RPM");
                 ProgressBar engine_RPM_pb = (ProgressBar) findViewById((R.id.engine_RPM_pb));
                 engine_RPM_pb.setProgress(Integer.parseInt(rpmdata[0]));
+                if(Integer.parseInt(rpmdata[0])>5000){
+                    // we shouldn't get here, still warn user
+                    Toast.makeText(this, "Too Much PRM to Work Engine! Too Dangerous!",
+                            Toast.LENGTH_LONG).show();
+                }
             }
             if(cmdID.equals(AvailableCommandNames.ENGINE_LOAD.toString())) {
                 TextView rpmtv = (TextView) findViewById(R.id.engine_load_text);
@@ -1040,9 +1064,9 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
             value.setGravity(Gravity.LEFT);
             value.setText(val);
             value.setTag(id);
-           /* tr.addView(name);
+            tr.addView(name);
             tr.addView(value);
-            tl.addView(tr, params);*/
+            tl.addView(tr, params);
         }
 
         /**

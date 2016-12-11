@@ -113,12 +113,12 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
             curLatitude = gps.getLatitude();
             curLongitude = gps.getLongitude();
             tmapview.setCenterPoint(curLongitude, curLatitude);
-            Toast.makeText(getApplicationContext(), "위치 불러오기 성공", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Success to Load Current Position.", Toast.LENGTH_SHORT).show();
             showGpsPoint();
             //staticVar.m_mapPoint.add(new MapPoint("현재위치", curLatitude, curLongitude, "", "",0));
         }
         else
-            Toast.makeText(getApplicationContext(), "위치를 불러오지 못했습니다. 다시한번 실행해주세요", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Fail to Load Current Position. Please Try Again.", Toast.LENGTH_SHORT).show();
 
         GetXMLTask task = new GetXMLTask();
         task.execute(parsing_url);
@@ -153,7 +153,7 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
                 doc.getDocumentElement().normalize();
 
             } catch (Exception e) {
-                Toast.makeText(getBaseContext(), "Parsing Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Parsing Error", Toast.LENGTH_SHORT).show();
             }
             return doc;
         }
@@ -208,8 +208,8 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
 
 
                 //Log.d("Log: ", evChargerItem.toString()+ staticVar.mList.size());
-
-                staticVar.m_mapPoint.add(new MapPoint(evChargerItem.getStatNm(), evChargerItem.getLat(), evChargerItem.getLng(), evChargerItem.getUserTime(), evChargerItem.getAddr(),tMapPOIItem.getDistance(new TMapPoint(curLatitude, curLongitude)), evChargerItem.getChgerType(), evChargerItem.getStat(), 280+a+b ));
+                if(tMapPOIItem.getDistance(new TMapPoint(curLatitude, curLongitude))<80000)
+                    staticVar.m_mapPoint.add(new MapPoint(evChargerItem.getStatNm(), evChargerItem.getLat(), evChargerItem.getLng(), evChargerItem.getUserTime(), evChargerItem.getAddr(),tMapPOIItem.getDistance(new TMapPoint(curLatitude, curLongitude)), evChargerItem.getChgerType(), evChargerItem.getStat(), 280+a+b ));
                 System.out.println(i+1+" :거리계산 :"+tMapPOIItem.getDistance(new TMapPoint(curLatitude, curLongitude)));
                 Collections.sort(staticVar.m_mapPoint, new Comparator<MapPoint>(){
                     public int compare(MapPoint obj1, MapPoint obj2)
@@ -224,7 +224,10 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
                 System.out.println("맵포인트 "+(i+1)+" :"+staticVar.m_mapPoint.get(i).getName()+", 거리 : "+staticVar.m_mapPoint.get(i).getDistance());
             }
             showMarkerPoint();
-
+            String warning_fuel = getIntent().getStringExtra("Warning_Fuel");
+            if(warning_fuel == "true"){
+                searchRoute(new TMapPoint(curLatitude, curLongitude), new TMapPoint(staticVar.m_mapPoint.get(0).getLatitude(), staticVar.m_mapPoint.get(0).getLongitude()));
+            }
             super.onPostExecute(doc);
         }
 
