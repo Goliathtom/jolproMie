@@ -62,7 +62,6 @@
     </TableRow>
 
 
-
     <ScrollView
         android:id="@+id/total_scroll"
         android:layout_width="fill_parent"
@@ -241,7 +240,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Consumed %" />
+                    android:text="Available Fuel" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -273,7 +272,7 @@
                     android:progressDrawable="@drawable/circular_progress_bar_yellow"
                     android:background="@drawable/circle_shape"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:max="8000"
+                    android:max="800000"
                     android:progress="0" />
 
                 <TextView
@@ -391,6 +390,7 @@
                 </ScrollView>
         </LinearLayout>
     </ScrollView>
+
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">

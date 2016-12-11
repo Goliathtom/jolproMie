@@ -15,28 +15,14 @@
         android:background="@android:color/white"
         android:layout_weight="1">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <Button
-                android:text="가까운 충전소"
-                android:layout_width="123dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/tmap_button"
-                android:textAlignment="center"
-                android:onClick="onClick_button">
-            </Button>
-
-            <TextView
-                android:text="TextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView3" />
-        </LinearLayout>
-
+        <Button
+            android:text="가까운 충전소"
+            android:layout_width="162dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/tmap_button"
+            android:textAlignment="center"
+            android:onClick="onClick_button">
+        </Button>
     </LinearLayout>
 
 </LinearLayout>

@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -49,7 +50,6 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
 
     private GpsInfo gps;
 
-//    TextView DirTextView = (TextView) findViewById(R.id.textView3);
     private TMapGpsManager tmapgps = null;
     private TMapView tmapview = null;
     private static String mApiKey = "5d8fea47-699f-3d33-8a53-068e253fd885";
@@ -100,7 +100,7 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
         //tmapview.setIconVisibility(true);
 
         /* 줌레벨 */
-        tmapview.setZoomLevel(14);
+        tmapview.setZoomLevel(12);
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
 
@@ -113,12 +113,12 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
             curLatitude = gps.getLatitude();
             curLongitude = gps.getLongitude();
             tmapview.setCenterPoint(curLongitude, curLatitude);
-            Toast.makeText(getApplicationContext(), "위치 불러오기 성공", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Success to Load Current Position.", Toast.LENGTH_SHORT).show();
             showGpsPoint();
             //staticVar.m_mapPoint.add(new MapPoint("현재위치", curLatitude, curLongitude, "", "",0));
         }
         else
-            Toast.makeText(getApplicationContext(), "위치를 불러오지 못했습니다. 다시한번 실행해주세요", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Fail to Load Current Position. Please Try Again.", Toast.LENGTH_SHORT).show();
 
         GetXMLTask task = new GetXMLTask();
         task.execute(parsing_url);
@@ -126,8 +126,6 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
         // tmapview.setTrackingMode(true);
 
         tmapview.setSightVisible(true);
-
-
 
         tmapview.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
             @Override
@@ -155,7 +153,7 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
                 doc.getDocumentElement().normalize();
 
             } catch (Exception e) {
-                Toast.makeText(getBaseContext(), "Parsing Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Parsing Error", Toast.LENGTH_SHORT).show();
             }
             return doc;
         }
@@ -210,7 +208,7 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
 
 
                 //Log.d("Log: ", evChargerItem.toString()+ staticVar.mList.size());
-               if(tMapPOIItem.getDistance(new TMapPoint(curLatitude, curLongitude))<10000)
+                if(tMapPOIItem.getDistance(new TMapPoint(curLatitude, curLongitude))<80000)
                     staticVar.m_mapPoint.add(new MapPoint(evChargerItem.getStatNm(), evChargerItem.getLat(), evChargerItem.getLng(), evChargerItem.getUserTime(), evChargerItem.getAddr(),tMapPOIItem.getDistance(new TMapPoint(curLatitude, curLongitude)), evChargerItem.getChgerType(), evChargerItem.getStat(), 280+a+b ));
                 System.out.println(i+1+" :거리계산 :"+tMapPOIItem.getDistance(new TMapPoint(curLatitude, curLongitude)));
                 Collections.sort(staticVar.m_mapPoint, new Comparator<MapPoint>(){
@@ -226,8 +224,10 @@ public class TmapActivity extends Activity implements TMapGpsManager.onLocationC
                 System.out.println("맵포인트 "+(i+1)+" :"+staticVar.m_mapPoint.get(i).getName()+", 거리 : "+staticVar.m_mapPoint.get(i).getDistance());
             }
             showMarkerPoint();
-            searchRoute(new TMapPoint(curLatitude, curLongitude), new TMapPoint(staticVar.m_mapPoint.get(0).getLatitude(),staticVar.m_mapPoint.get(0).getLongitude()));
-            //DirTextView.setText("현재위치 ----> "+staticVar.m_mapPoint.get(0).getName());
+            String warning_fuel = getIntent().getStringExtra("Warning_Fuel");
+            if(warning_fuel == "true"){
+                searchRoute(new TMapPoint(curLatitude, curLongitude), new TMapPoint(staticVar.m_mapPoint.get(0).getLatitude(), staticVar.m_mapPoint.get(0).getLongitude()));
+            }
             super.onPostExecute(doc);
         }
 
